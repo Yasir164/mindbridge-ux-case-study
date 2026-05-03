@@ -4,6 +4,8 @@
 
 ---
 
+**[▶ View Live Prototype](https://yasir164.github.io/mindbridge-ux-case-study/mindbridge.html)**
+
 ## Overview
 
 MindBridge is a mobile app, responsive website, and fully coded interactive prototype filling the critical gap between *"I'm not okay"* and *"I need a therapist."* It provides anonymous, free peer support through moderated circles, flexible mood tracking, and always-visible crisis resources.
