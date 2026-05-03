@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindBridge — Mental Wellness</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #5B4CE8;
+    --primary-light: #7B6EF0;
+    --primary-dark: #3D2FC4;
+    --primary-bg: #EEEDFE;
+    --accent: #9C8FFF;
+    --danger: #E24B4A;
+    --danger-bg: #FCEBEB;
+    --success: #1D9E75;
+    --success-bg: #E1F5EE;
+    --warning: #BA7517;
+    --warning-bg: #FAEEDA;
+    --bg: #F7F6FF;
+    --surface: #FFFFFF;
+    --surface2: #F3F2FF;
+    --border: rgba(91,76,232,0.15);
+    --border2: rgba(91,76,232,0.25);
+    --text: #1a1730;
+    --text2: #5a5476;
+    --text3: #9490b0;
+    --sidebar-w: 220px;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  h1,h2,h3,h4 { font-family: 'Sora', sans-serif; }
+
+  /* ── SCREEN SYSTEM ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+  .screen.with-sidebar { flex-direction: row; }
+
+  /* ── NAV BAR (public pages) ── */
+  .topnav { display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 64px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .logo { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.2rem; color: var(--primary); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 2rem; }
+  .nav-links a { text-decoration: none; color: var(--text2); font-size: 0.9rem; font-weight: 500; cursor: pointer; transition: color .2s; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-actions { display: flex; gap: 0.75rem; }
+
+  /* ── BUTTONS ── */
+  .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.25rem; border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; border: none; transition: all .18s; text-decoration: none; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+  .btn-outline:hover { background: var(--primary-bg); }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--surface2); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #c03030; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; }
+  .btn-lg { padding: 0.8rem 2rem; font-size: 1rem; border-radius: var(--radius); }
+  .btn-full { width: 100%; justify-content: center; }
+
+  /* ── FORMS ── */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text2); margin-bottom: 0.4rem; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.7rem 1rem; border: 1.5px solid var(--border2); border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: var(--surface); color: var(--text);
+    transition: border-color .2s; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+  .form-divider { text-align: center; color: var(--text3); font-size: 0.85rem; margin: 1rem 0; }
+
+  /* ── CARDS ── */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .card-sm { padding: 1rem; border-radius: var(--radius-sm); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem 1rem; flex-shrink: 0; }
+  .sidebar .logo { margin-bottom: 2rem; padding: 0 0.5rem; }
+  .sidebar-nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; }
+  .nav-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.75rem; border-radius: var(--radius-sm); color: var(--text2); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all .18s; text-decoration: none; }
+  .nav-item:hover, .nav-item.active { background: var(--primary-bg); color: var(--primary); }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sidebar-footer { margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; overflow-y: auto; }
+  .page-header { padding: 1.5rem 2rem 0; }
+  .page-header h2 { font-size: 1.4rem; font-weight: 700; }
+  .page-header p { color: var(--text2); font-size: 0.9rem; margin-top: 0.25rem; }
+  .page-body { padding: 1.5rem 2rem; }
+
+  /* ── BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 0.25rem 0.6rem; border-radius: 100px; font-size: 0.75rem; font-weight: 600; }
+  .badge-primary { background: var(--primary-bg); color: var(--primary); }
+  .badge-success { background: var(--success-bg); color: var(--success); }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); }
+  .badge-warning { background: var(--warning-bg); color: var(--warning); }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+
+  /* ── GRID UTILITIES ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .flex { display: flex; }
+  .flex-center { display: flex; align-items: center; }
+  .flex-between { display: flex; align-items: center; justify-content: space-between; }
+  .gap-1 { gap: 0.5rem; } .gap-2 { gap: 1rem; } .gap-3 { gap: 1.5rem; }
+  .mt-1 { margin-top: 0.5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 1.5rem; }
+  .mb-1 { margin-bottom: 0.5rem; } .mb-2 { margin-bottom: 1rem; }
+
+  /* ── STAT CARDS ── */
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; }
+  .stat-card .stat-label { font-size: 0.8rem; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card .stat-val { font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; margin-top: 0.25rem; color: var(--primary); }
+  .stat-card .stat-sub { font-size: 0.8rem; color: var(--text3); margin-top: 0.2rem; }
+
+  /* ── MOOD EMOJIS ── */
+  .mood-btn { width: 56px; height: 56px; border-radius: 50%; border: 2px solid var(--border2); background: var(--surface); font-size: 1.75rem; cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; }
+  .mood-btn:hover, .mood-btn.selected { border-color: var(--primary); background: var(--primary-bg); transform: scale(1.1); }
+
+  /* ── PROGRESS BARS ── */
+  .progress-bar { height: 8px; background: var(--surface2); border-radius: 100px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 100px; background: var(--primary); transition: width .4s; }
+
+  /* ── CRISIS LEVELS ── */
+  .crisis-level { padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 0.75rem; cursor: pointer; border: 2px solid transparent; transition: all .18s; }
+  .crisis-level:hover { transform: translateX(4px); }
+  .crisis-low { background: var(--success-bg); border-color: var(--success); }
+  .crisis-med { background: var(--warning-bg); border-color: var(--warning); }
+  .crisis-high { background: var(--danger-bg); border-color: var(--danger); }
+
+  /* ── CHAT BUBBLE ── */
+  .chat-bubble { max-width: 75%; padding: 0.75rem 1rem; border-radius: var(--radius); font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.75rem; }
+  .chat-bubble.incoming { background: var(--surface); border: 1px solid var(--border); align-self: flex-start; }
+  .chat-bubble.outgoing { background: var(--primary); color: #fff; align-self: flex-end; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--text); color: #fff; padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  /* ── PAGE-SPECIFIC STYLES ── */
+
+  /* LANDING */
+  #landing { background: var(--bg); }
+  .hero { display: flex; align-items: center; justify-content: space-between; padding: 5rem 4rem; max-width: 1100px; margin: 0 auto; gap: 3rem; }
+  .hero-text h1 { font-size: 3rem; font-weight: 700; line-height: 1.1; letter-spacing: -1.5px; }
+  .hero-text h1 .highlight { color: var(--primary); }
+  .hero-text p { color: var(--text2); font-size: 1.1rem; margin: 1.25rem 0 2rem; line-height: 1.7; max-width: 460px; }
+  .hero-actions { display: flex; gap: 1rem; }
+  .hero-visual { position: relative; }
+  .hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 1.5rem; width: 300px; box-shadow: 0 20px 60px rgba(91,76,232,0.12); }
+  .hero-card .card-title { font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 600; color: var(--text2); margin-bottom: 1rem; }
+  .floating-pill { background: var(--primary); color: #fff; padding: 0.5rem 1rem; border-radius: 100px; font-size: 0.8rem; font-weight: 600; position: absolute; }
+  .stats-row { display: flex; gap: 2rem; padding: 2rem 4rem; max-width: 1100px; margin: 0 auto; }
+  .stat-item { text-align: center; }
+  .stat-item .num { font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 700; color: var(--primary); }
+  .stat-item .lbl { font-size: 0.85rem; color: var(--text3); }
+  .features-section { padding: 4rem; max-width: 1100px; margin: 0 auto; }
+  .features-section h2 { font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 0.5rem; }
+  .features-section .sub { text-align: center; color: var(--text2); margin-bottom: 3rem; }
+  .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; }
+  .feature-icon { width: 52px; height: 52px; background: var(--primary-bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.5rem; }
+  .feature-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .feature-card p { font-size: 0.875rem; color: var(--text2); line-height: 1.6; }
+
+  /* ABOUT */
+  #about .about-hero { background: linear-gradient(135deg, var(--primary-bg) 0%, var(--surface) 100%); padding: 4rem; text-align: center; }
+  #about .about-hero h1 { font-size: 2.5rem; font-weight: 700; }
+  #about .team-section { padding: 3rem 4rem; max-width: 1100px; margin: 0 auto; }
+
+  /* AUTH SCREENS */
+  .auth-container { min-height: calc(100vh - 64px); display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  .auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 440px; box-shadow: 0 12px 48px rgba(91,76,232,0.1); }
+  .auth-box h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .auth-box .auth-sub { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; }
+
+  /* DASHBOARD */
+  .greeting-card { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; border-radius: var(--radius); padding: 1.5rem 2rem; margin-bottom: 1.5rem; }
+  .greeting-card h3 { font-size: 1.25rem; font-weight: 600; }
+  .greeting-card p { font-size: 0.9rem; opacity: 0.85; margin-top: 0.25rem; }
+  .quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  .quick-action { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; text-align: center; cursor: pointer; transition: all .2s; }
+  .quick-action:hover { border-color: var(--primary); background: var(--primary-bg); }
+  .quick-action .qa-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+  .quick-action .qa-label { font-size: 0.8rem; font-weight: 500; color: var(--text2); }
+  .chart-area { height: 140px; background: var(--surface2); border-radius: var(--radius-sm); position: relative; overflow: hidden; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 6px; padding: 0 1rem 1rem; height: 100%; }
+  .chart-bar { flex: 1; border-radius: 4px 4px 0 0; background: var(--primary-bg); transition: height .4s; }
+  .chart-bar.active { background: var(--primary); }
+
+  /* BROWSE CIRCLES */
+  .circle-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; cursor: pointer; transition: all .2s; }
+  .circle-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,76,232,0.1); }
+  .circle-avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--primary-bg); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 0.75rem; }
+  .circle-card h4 { font-size: 0.95rem; font-weight: 600; }
+  .circle-card p { font-size: 0.8rem; color: var(--text2); margin-top: 0.3rem; line-height: 1.5; }
+  .circle-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; font-size: 0.78rem; color: var(--text3); }
+
+  /* CIRCLE DETAILS */
+  .chat-area { display: flex; flex-direction: column; padding: 1.5rem; gap: 0; }
+  .chat-input-bar { display: flex; gap: 0.75rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border); background: var(--surface); }
+  .chat-input-bar input { flex: 1; padding: 0.65rem 1rem; border: 1.5px solid var(--border2); border-radius: 100px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; outline: none; background: var(--bg); }
+  .chat-input-bar input:focus { border-color: var(--primary); }
+  #circle-details { flex-direction: column; }
+  .circle-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; gap: 1rem; }
+
+  /* MOOD TRACKER */
+  .mood-row { display: flex; gap: 1rem; justify-content: center; margin: 1.5rem 0; }
+  .mood-graph { height: 180px; position: relative; background: var(--surface2); border-radius: var(--radius-sm); overflow: hidden; }
+  .mood-svg { width: 100%; height: 100%; }
+
+  /* SELF CARE */
+  .task-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 0.75rem; cursor: pointer; transition: all .18s; }
+  .task-item:hover { border-color: var(--primary); }
+  .task-item.done { opacity: 0.6; }
+  .task-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .18s; }
+  .task-item.done .task-check { background: var(--success); border-color: var(--success); color: #fff; }
+  .task-label { flex: 1; font-size: 0.9rem; font-weight: 500; }
+  .task-item.done .task-label { text-decoration: line-through; color: var(--text3); }
+  .task-pts { font-size: 0.8rem; color: var(--primary); font-weight: 600; }
+
+  /* CRISIS */
+  .crisis-banner { background: var(--danger); color: #fff; padding: 1rem 1.5rem; text-align: center; }
+  .crisis-banner p { font-size: 0.9rem; opacity: 0.9; margin-top: 0.25rem; }
+  .emergency-btn { display: block; width: 100%; padding: 1rem; background: var(--danger); color: #fff; border: none; border-radius: var(--radius-sm); font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all .18s; margin-bottom: 0.75rem; }
+  .emergency-btn:hover { background: #c03030; }
+
+  /* PROFILE */
+  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-family: 'Sora', sans-serif; font-size: 1.75rem; font-weight: 700; color: #fff; }
+  .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 0; border-bottom: 1px solid var(--border); }
+  .setting-row:last-child { border-bottom: none; }
+  .toggle { width: 44px; height: 24px; background: var(--border2); border-radius: 100px; position: relative; cursor: pointer; transition: background .2s; }
+  .toggle.on { background: var(--primary); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform .2s; }
+  .toggle.on::after { transform: translateX(20px); }
+
+  /* BADGES */
+  .badge-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; text-align: center; }
+  .badge-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+  .badge-card h4 { font-size: 0.875rem; font-weight: 600; }
+  .badge-card p { font-size: 0.78rem; color: var(--text3); margin-top: 0.2rem; }
+  .badge-card.locked { opacity: 0.4; filter: grayscale(1); }
+
+  /* TOPBAR for app screens */
+  .app-topbar { height: 56px; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; position: sticky; top: 0; z-index: 10; }
+  .app-topbar h3 { font-size: 1rem; font-weight: 600; flex: 1; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 1 — LANDING
+══════════════════════════════════════════════════════ -->
+<div id="landing" class="screen active">
+  <nav class="topnav">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <div class="nav-links">
+      <a onclick="showScreen('about')">About</a>
+      <a onclick="showScreen('browse-circles')">Circles</a>
+      <a href="#features-section">Features</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="showScreen('login')">Log In</button>
+      <button class="btn btn-primary" onclick="showScreen('signup')">Get Started</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Safe, peer support<br>for <span class="highlight">your</span><br>mental health.</h1>
+      <p>Join a supportive community, track your mood, access crisis resources, and grow with guided self-care tools — all in one place.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" onclick="showScreen('signup')">Start for free</button>
+        <button class="btn btn-outline btn-lg" onclick="showScreen('about')">Learn more</button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <div class="card-title">Today's Mood Check-in</div>
+        <div style="display:flex;gap:0.75rem;justify-content:center;margin:0.75rem 0">
+          <span style="font-size:1.75rem;cursor:pointer">😔</span>
+          <span style="font-size:1.75rem;cursor:pointer">😐</span>
+          <span style="font-size:2rem;cursor:pointer;transform:scale(1.2)">🙂</span>
+          <span style="font-size:1.75rem;cursor:pointer">😊</span>
+          <span style="font-size:1.75rem;cursor:pointer">😄</span>
+        </div>
+        <div style="text-align:center;font-size:0.85rem;color:var(--text2);margin-top:0.5rem">Feeling good today?</div>
+        <div style="height:6px;background:var(--surface2);border-radius:100px;margin-top:1rem">
+          <div style="height:100%;width:68%;background:var(--primary);border-radius:100px"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text3);margin-top:0.35rem"><span>Mon</span><span>Wed</span><span>Fri</span></div>
+      </div>
+      <div class="floating-pill" style="top:-1rem;right:-1.5rem">✨ 247 active circles</div>
+      <div class="floating-pill" style="bottom:1.5rem;left:-2rem;background:var(--success)">🌱 +12% wellness streak</div>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item"><div class="num">12,000+</div><div class="lbl">Members</div></div>
+    <div class="stat-item"><div class="num">247</div><div class="lbl">Support Circles</div></div>
+    <div class="stat-item"><div class="num">98%</div><div class="lbl">Feel supported</div></div>
+    <div class="stat-item"><div class="num">24/7</div><div class="lbl">Crisis support</div></div>
+  </div>
+
+  <div class="features-section" id="features-section">
+    <h2>How MindBridge works</h2>
+    <p class="sub">Everything you need for your mental wellness journey</p>
+    <div class="grid-3" style="gap:1.5rem">
+      <div class="feature-card">
+        <div class="feature-icon">🫂</div>
+        <h3>Peer Support Circles</h3>
+        <p>Join topic-based circles moderated by trained volunteers. Share, listen, and grow together.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Mood Tracking</h3>
+        <p>Log daily moods and visualize patterns over time to understand your mental health journey.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧘</div>
+        <h3>Self-Care Tools</h3>
+        <p>Guided activities, breathing exercises, and habit trackers to build a healthier routine.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3>Crisis Support</h3>
+        <p>Immediate access to crisis hotlines, text support, and safety planning resources.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏅</div>
+        <h3>Badge Pathways</h3>
+        <p>Earn badges for consistency, helping others, and reaching personal wellness milestones.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Private & Secure</h3>
+        <p>Anonymous profiles, end-to-end encrypted messages, and full control over your data.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:3rem 2rem;border-top:1px solid var(--border);color:var(--text3);font-size:0.85rem">
+    © 2024 MindBridge · <a href="#" style="color:var(--primary)">Privacy</a> · <a href="#" style="color:var(--primary)">Terms</a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 2 — ABOUT
+══════════════════════════════════════════════════════ -->
+<div id="about" class="screen">
+  <nav class="topnav">
+    <div class="logo" onclick="showScreen('landing')" style="cursor:pointer">Mind<span>Bridge</span></div>
+    <div class="nav-links">
+      <a onclick="showScreen('landing')">Home</a>
+      <a onclick="showScreen('browse-circles')">Circles</a>
+    </div>
+    <div class="nav-actions">
+      <button class="btn btn-ghost" onclick="showScreen('login')">Log In</button>
+      <button class="btn btn-primary" onclick="showScreen('signup')">Get Started</button>
+    </div>
+  </nav>
+
+  <div style="background:var(--primary-bg);padding:4rem;text-align:center">
+    <h1 style="font-size:2.5rem;font-weight:700;margin-bottom:1rem">Our Mission</h1>
+    <p style="color:var(--text2);max-width:600px;margin:0 auto;font-size:1.1rem;line-height:1.7">MindBridge was founded to remove the barriers between people who need mental health support and those who can provide it. We believe peer connection is one of the most powerful tools for healing.</p>
+  </div>
+
+  <div style="padding:3rem 4rem;max-width:1100px;margin:0 auto">
+    <div class="grid-3" style="gap:2rem;margin-bottom:3rem">
+      <div style="text-align:center">
+        <div style="width:64px;height:64px;background:var(--primary-bg);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">💜</div>
+        <h3 style="font-weight:600;margin-bottom:0.4rem">Empathy First</h3>
+        <p style="font-size:0.875rem;color:var(--text2);line-height:1.6">Every feature is designed with compassion and understanding at its core.</p>
+      </div>
+      <div style="text-align:center">
+        <div style="width:64px;height:64px;background:var(--primary-bg);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">🔐</div>
+        <h3 style="font-weight:600;margin-bottom:0.4rem">Privacy Always</h3>
+        <p style="font-size:0.875rem;color:var(--text2);line-height:1.6">Your data stays yours. We never sell, share, or monetize your personal information.</p>
+      </div>
+      <div style="text-align:center">
+        <div style="width:64px;height:64px;background:var(--primary-bg);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1rem">🌍</div>
+        <h3 style="font-weight:600;margin-bottom:0.4rem">Accessible to All</h3>
+        <p style="font-size:0.875rem;color:var(--text2);line-height:1.6">Free core features, available in multiple languages, designed for all abilities.</p>
+      </div>
+    </div>
+
+    <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:1.5rem">Meet the Team</h2>
+    <div class="grid-4" style="gap:1rem">
+      <div class="card" style="text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem">SA</div>
+        <h4 style="font-size:0.9rem;font-weight:600">Sarah Ahmed</h4>
+        <p style="font-size:0.78rem;color:var(--text3)">Co-Founder & CEO</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:#9C8FFF;color:#fff;font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem">JL</div>
+        <h4 style="font-size:0.9rem;font-weight:600">James Liu</h4>
+        <p style="font-size:0.78rem;color:var(--text3)">CTO & Lead Engineer</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--success);color:#fff;font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem">MP</div>
+        <h4 style="font-size:0.9rem;font-weight:600">Maya Patel</h4>
+        <p style="font-size:0.78rem;color:var(--text3)">Head of Wellbeing</p>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--warning);color:#fff;font-family:'Sora',sans-serif;font-size:1.25rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 0.75rem">RK</div>
+        <h4 style="font-size:0.9rem;font-weight:600">Ravi Kumar</h4>
+        <p style="font-size:0.78rem;color:var(--text3)">UX & Design Lead</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 3 — SIGN UP
+══════════════════════════════════════════════════════ -->
+<div id="signup" class="screen">
+  <nav class="topnav">
+    <div class="logo" onclick="showScreen('landing')" style="cursor:pointer">Mind<span>Bridge</span></div>
+    <div class="nav-actions">
+      <span style="font-size:0.875rem;color:var(--text2)">Already have an account?</span>
+      <button class="btn btn-outline" onclick="showScreen('login')">Log In</button>
+    </div>
+  </nav>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2>Create your account</h2>
+      <p class="auth-sub">Start your mental wellness journey today</p>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" placeholder="Your name" id="su-name">
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@example.com" id="su-email">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="Create a strong password" id="su-pass">
+      </div>
+      <div class="form-group">
+        <label>I am primarily looking for...</label>
+        <select>
+          <option>Peer support & community</option>
+          <option>Mood & habit tracking</option>
+          <option>Crisis resources</option>
+          <option>All of the above</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:0.6rem;margin-bottom:1.5rem">
+        <input type="checkbox" id="tos" style="margin-top:3px;width:auto;flex-shrink:0">
+        <label for="tos" style="font-size:0.82rem;color:var(--text2);cursor:pointer">I agree to the <a href="#" style="color:var(--primary)">Terms of Service</a> and <a href="#" style="color:var(--primary)">Privacy Policy</a></label>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="doSignup()">Create Account</button>
+      <div class="form-divider">— or sign up with —</div>
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn btn-ghost btn-full" onclick="doSignup()">🔵 Google</button>
+        <button class="btn btn-ghost btn-full" onclick="doSignup()">🌐 Apple</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 4 — LOG IN
+══════════════════════════════════════════════════════ -->
+<div id="login" class="screen">
+  <nav class="topnav">
+    <div class="logo" onclick="showScreen('landing')" style="cursor:pointer">Mind<span>Bridge</span></div>
+    <div class="nav-actions">
+      <span style="font-size:0.875rem;color:var(--text2)">New here?</span>
+      <button class="btn btn-primary" onclick="showScreen('signup')">Sign Up</button>
+    </div>
+  </nav>
+  <div class="auth-container">
+    <div class="auth-box">
+      <h2>Welcome back 👋</h2>
+      <p class="auth-sub">Log in to continue your wellness journey</p>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" placeholder="you@example.com" value="user@mindbridge.app">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="Your password" value="••••••••">
+      </div>
+      <div style="text-align:right;margin-bottom:1.5rem">
+        <a href="#" style="font-size:0.85rem;color:var(--primary)">Forgot password?</a>
+      </div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()">Log In</button>
+      <div class="form-divider">— or continue with —</div>
+      <div style="display:flex;gap:0.75rem">
+        <button class="btn btn-ghost btn-full" onclick="doLogin()">🔵 Google</button>
+        <button class="btn btn-ghost btn-full" onclick="doLogin()">🌐 Apple</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 5 — DASHBOARD
+══════════════════════════════════════════════════════ -->
+<div id="dashboard" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" onclick="showScreen('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" onclick="showScreen('browse-circles')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Browse Circles
+      </a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        Mood Tracker
+      </a>
+      <a class="nav-item" onclick="showScreen('self-care')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Self Care
+      </a>
+      <a class="nav-item" onclick="showScreen('crisis-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Crisis Support
+      </a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        Badges
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-item" onclick="showScreen('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="sidebar-username">My Profile</span>
+      </a>
+      <a class="nav-item" onclick="showScreen('landing')" style="color:var(--danger)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <div class="flex-between">
+        <div>
+          <h2 id="greeting-text">Good morning, Alex 👋</h2>
+          <p>Here's how your wellness is going</p>
+        </div>
+        <button class="btn btn-primary" onclick="showScreen('mood-tracker')">+ Log Mood</button>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="grid-4" style="margin-bottom:1.5rem">
+        <div class="stat-card">
+          <div class="stat-label">Mood Score</div>
+          <div class="stat-val">7.4</div>
+          <div class="stat-sub">↑ 0.8 from last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Streak</div>
+          <div class="stat-val">12</div>
+          <div class="stat-sub">days in a row 🔥</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Circles Joined</div>
+          <div class="stat-val">3</div>
+          <div class="stat-sub">active this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Badges Earned</div>
+          <div class="stat-val">8</div>
+          <div class="stat-sub">2 new this month</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:1.5rem;margin-bottom:1.5rem">
+        <div class="card">
+          <div class="flex-between mb-2">
+            <h3 style="font-size:0.95rem;font-weight:600">Mood This Week</h3>
+            <span class="badge badge-primary">7-day view</span>
+          </div>
+          <div class="chart-area">
+            <div class="chart-bars" id="dashboard-chart">
+              <div class="chart-bar" style="height:50%"></div>
+              <div class="chart-bar" style="height:65%"></div>
+              <div class="chart-bar" style="height:40%"></div>
+              <div class="chart-bar" style="height:75%"></div>
+              <div class="chart-bar active" style="height:80%"></div>
+              <div class="chart-bar active" style="height:70%"></div>
+              <div class="chart-bar active" style="height:85%"></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text3);margin-top:0.4rem;padding:0 1rem">
+            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="flex-between mb-2">
+            <h3 style="font-size:0.95rem;font-weight:600">Today's Self-Care</h3>
+            <span class="badge badge-success">3/5 done</span>
+          </div>
+          <div>
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Morning meditation</span><span class="task-pts">+20 pts</span></div>
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Drink 8 glasses of water</span><span class="task-pts">+10 pts</span></div>
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Gratitude journal</span><span class="task-pts">+15 pts</span></div>
+            <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div><span class="task-label">30 min walk outside</span><span class="task-pts">+25 pts</span></div>
+            <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div><span class="task-label">Read for 20 minutes</span><span class="task-pts">+15 pts</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="flex-between mb-2">
+          <h3 style="font-size:0.95rem;font-weight:600">Your Circles</h3>
+          <button class="btn btn-ghost btn-sm" onclick="showScreen('browse-circles')">Browse more →</button>
+        </div>
+        <div class="grid-3" style="gap:1rem">
+          <div class="circle-card" onclick="showScreen('circle-details')">
+            <div class="circle-avatar">🧘</div>
+            <h4>Anxiety Support</h4>
+            <p>A safe space for those managing anxiety</p>
+            <div class="circle-meta"><span>👥 128 members</span><span>· 🟢 Active</span></div>
+          </div>
+          <div class="circle-card" onclick="showScreen('circle-details')">
+            <div class="circle-avatar">💤</div>
+            <h4>Sleep & Rest</h4>
+            <p>Better sleep, better mental health</p>
+            <div class="circle-meta"><span>👥 84 members</span><span>· 🟢 Active</span></div>
+          </div>
+          <div class="circle-card" onclick="showScreen('circle-details')">
+            <div class="circle-avatar">🌱</div>
+            <h4>Personal Growth</h4>
+            <p>Building healthy habits together</p>
+            <div class="circle-meta"><span>👥 205 members</span><span>· 🟢 Active</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 6 — BROWSE CIRCLES
+══════════════════════════════════════════════════════ -->
+<div id="browse-circles" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item active" onclick="showScreen('browse-circles')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        Browse Circles
+      </a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
+        Mood Tracker
+      </a>
+      <a class="nav-item" onclick="showScreen('self-care')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Self Care
+      </a>
+      <a class="nav-item" onclick="showScreen('crisis-support')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Crisis Support
+      </a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        Badges
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-item" onclick="showScreen('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        My Profile
+      </a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <h2>Browse Circles</h2>
+      <p>Find your community — join circles that resonate with you</p>
+    </div>
+    <div class="page-body">
+      <div style="display:flex;gap:0.75rem;margin-bottom:1.5rem">
+        <input type="text" placeholder="🔍  Search circles..." style="flex:1;padding:0.65rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;background:var(--surface)" oninput="filterCircles(this.value)">
+        <select style="padding:0.65rem 1rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.875rem;background:var(--surface)" onchange="filterCircles('')">
+          <option>All Topics</option>
+          <option>Anxiety</option>
+          <option>Depression</option>
+          <option>Grief</option>
+          <option>Relationships</option>
+        </select>
+      </div>
+      <div class="grid-3" id="circles-grid" style="gap:1rem">
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">🧘</div>
+          <h4>Anxiety Support</h4>
+          <p>A safe space for those managing anxiety and panic</p>
+          <div class="circle-meta"><span>👥 128</span><span>· 🟢 Active now</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-primary">Anxiety</span></div>
+        </div>
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">💤</div>
+          <h4>Sleep & Rest</h4>
+          <p>Better sleep habits for a better mental state</p>
+          <div class="circle-meta"><span>👥 84</span><span>· 🟡 Quiet today</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-gray">Habits</span></div>
+        </div>
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">🌱</div>
+          <h4>Personal Growth</h4>
+          <p>Building resilience and healthy habits together</p>
+          <div class="circle-meta"><span>👥 205</span><span>· 🟢 Active now</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-success">Growth</span></div>
+        </div>
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">💔</div>
+          <h4>Grief & Loss</h4>
+          <p>Gentle support through loss and bereavement</p>
+          <div class="circle-meta"><span>👥 67</span><span>· 🟢 Active now</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-danger">Grief</span></div>
+        </div>
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">👨‍👩‍👧</div>
+          <h4>Family & Relationships</h4>
+          <p>Navigate relationship challenges with peer support</p>
+          <div class="circle-meta"><span>👥 143</span><span>· 🟢 Active now</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-warning">Relationships</span></div>
+        </div>
+        <div class="circle-card" onclick="showScreen('circle-details')">
+          <div class="circle-avatar">🎓</div>
+          <h4>Student Wellness</h4>
+          <p>Support for students managing academic stress</p>
+          <div class="circle-meta"><span>👥 312</span><span>· 🟢 Very Active</span></div>
+          <div style="margin-top:0.75rem"><span class="badge badge-primary">Students</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 7 — CIRCLE DETAILS (Chat)
+══════════════════════════════════════════════════════ -->
+<div id="circle-details" class="screen">
+  <div class="circle-header">
+    <button class="btn btn-ghost btn-sm" onclick="showScreen('browse-circles')">← Back</button>
+    <div style="width:36px;height:36px;border-radius:10px;background:var(--primary-bg);display:flex;align-items:center;justify-content:center;font-size:1.2rem">🧘</div>
+    <div style="flex:1">
+      <div style="font-weight:600;font-size:0.95rem">Anxiety Support</div>
+      <div style="font-size:0.78rem;color:var(--text3)">128 members · 🟢 Active now</div>
+    </div>
+    <span class="badge badge-primary">Joined</span>
+    <button class="btn btn-ghost btn-sm">Guidelines</button>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;background:var(--bg)">
+    <div class="chat-area">
+      <div style="text-align:center;padding:1rem;font-size:0.78rem;color:var(--text3)">Today · Moderated by Sam K.</div>
+      <div style="display:flex;flex-direction:column;gap:0.75rem">
+        <div style="display:flex;align-items:flex-start;gap:0.6rem">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--primary-bg);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--primary);flex-shrink:0">JD</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem">Jordan · 9:12 AM</div>
+            <div class="chat-bubble incoming">Has anyone tried box breathing for panic attacks? I've been practicing and it really helps.</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.6rem">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--success-bg);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--success);flex-shrink:0">ML</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem">Maya · 9:18 AM</div>
+            <div class="chat-bubble incoming">Yes! Box breathing is amazing. I also add a grounding exercise after. 4 things I can see, 3 I can touch...</div>
+          </div>
+        </div>
+        <div style="align-self:flex-end;max-width:75%">
+          <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem;text-align:right">You · 9:24 AM</div>
+          <div class="chat-bubble outgoing">Thank you both! I'll try combining them. The 5-4-3-2-1 technique has been on my list to try.</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.6rem">
+          <div style="width:30px;height:30px;border-radius:50%;background:var(--warning-bg);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600;color:var(--warning);flex-shrink:0">RP</div>
+          <div>
+            <div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem">Riya · 9:31 AM</div>
+            <div class="chat-bubble incoming">The 5-4-3-2-1 method is really grounding. Here to share what worked for me if helpful 💜</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-input-bar">
+    <input type="text" id="chat-input" placeholder="Share something with the circle..." onkeydown="if(event.key==='Enter')sendChatMsg()">
+    <button class="btn btn-ghost btn-sm">📎</button>
+    <button class="btn btn-primary btn-sm" onclick="sendChatMsg()">Send</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 8 — MOOD TRACKER
+══════════════════════════════════════════════════════ -->
+<div id="mood-tracker" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('browse-circles')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Browse Circles</a>
+      <a class="nav-item active" onclick="showScreen('mood-tracker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>Mood Tracker</a>
+      <a class="nav-item" onclick="showScreen('self-care')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Self Care</a>
+      <a class="nav-item" onclick="showScreen('crisis-support')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crisis Support</a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badges</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><h2>Mood Tracker</h2><p>How are you feeling today?</p></div>
+    <div class="page-body">
+      <div class="card" style="margin-bottom:1.5rem">
+        <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1.25rem">Log Today's Mood</h3>
+        <div class="mood-row">
+          <div class="flex" style="flex-direction:column;align-items:center;gap:0.4rem">
+            <button class="mood-btn" onclick="selectMood(this,1)">😞</button><span style="font-size:0.75rem;color:var(--text3)">Terrible</span>
+          </div>
+          <div class="flex" style="flex-direction:column;align-items:center;gap:0.4rem">
+            <button class="mood-btn" onclick="selectMood(this,3)">😕</button><span style="font-size:0.75rem;color:var(--text3)">Bad</span>
+          </div>
+          <div class="flex" style="flex-direction:column;align-items:center;gap:0.4rem">
+            <button class="mood-btn" onclick="selectMood(this,5)">😐</button><span style="font-size:0.75rem;color:var(--text3)">Okay</span>
+          </div>
+          <div class="flex" style="flex-direction:column;align-items:center;gap:0.4rem">
+            <button class="mood-btn selected" onclick="selectMood(this,7)">🙂</button><span style="font-size:0.75rem;color:var(--primary)">Good</span>
+          </div>
+          <div class="flex" style="flex-direction:column;align-items:center;gap:0.4rem">
+            <button class="mood-btn" onclick="selectMood(this,10)">😄</button><span style="font-size:0.75rem;color:var(--text3)">Great</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>What's influencing your mood? (optional)</label>
+          <textarea placeholder="I had a productive morning, but feeling a bit anxious about..." rows="3"></textarea>
+        </div>
+        <div style="margin-bottom:1.25rem">
+          <label style="display:block;font-size:0.85rem;font-weight:500;color:var(--text2);margin-bottom:0.5rem">Energy Level</label>
+          <input type="range" min="1" max="10" value="6" id="energy-slider" oninput="document.getElementById('energy-val').textContent=this.value" style="width:100%">
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text3);margin-top:0.2rem"><span>Exhausted</span><span>Energy: <b id="energy-val">6</b>/10</span><span>Energized</span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="saveMood()">Save Today's Log</button>
+      </div>
+
+      <div class="card">
+        <div class="flex-between mb-2">
+          <h3 style="font-size:0.95rem;font-weight:600">Mood History</h3>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn btn-ghost btn-sm">7d</button>
+            <button class="btn btn-primary btn-sm">30d</button>
+          </div>
+        </div>
+        <div class="mood-graph">
+          <svg class="mood-svg" viewBox="0 0 600 180" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="moodGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#5B4CE8" stop-opacity="0.3"/>
+                <stop offset="100%" stop-color="#5B4CE8" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,120 C60,100 80,60 120,80 C160,100 180,40 240,50 C300,60 320,90 360,70 C400,50 420,30 480,40 C520,50 560,60 600,45 L600,180 L0,180 Z" fill="url(#moodGrad)"/>
+            <path d="M0,120 C60,100 80,60 120,80 C160,100 180,40 240,50 C300,60 320,90 360,70 C400,50 420,30 480,40 C520,50 560,60 600,45" fill="none" stroke="#5B4CE8" stroke-width="2.5"/>
+            <circle cx="0" cy="120" r="4" fill="#5B4CE8"/>
+            <circle cx="120" cy="80" r="4" fill="#5B4CE8"/>
+            <circle cx="240" cy="50" r="4" fill="#5B4CE8"/>
+            <circle cx="360" cy="70" r="4" fill="#5B4CE8"/>
+            <circle cx="480" cy="40" r="4" fill="#5B4CE8"/>
+            <circle cx="600" cy="45" r="5" fill="#5B4CE8" stroke="#fff" stroke-width="2"/>
+          </svg>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.75rem;margin-top:1rem">
+          <div class="stat-card card-sm" style="padding:0.75rem">
+            <div class="stat-label" style="font-size:0.72rem">Avg Mood</div>
+            <div class="stat-val" style="font-size:1.25rem">7.2</div>
+          </div>
+          <div class="stat-card card-sm" style="padding:0.75rem">
+            <div class="stat-label" style="font-size:0.72rem">Best Day</div>
+            <div class="stat-val" style="font-size:1.25rem">9.1</div>
+          </div>
+          <div class="stat-card card-sm" style="padding:0.75rem">
+            <div class="stat-label" style="font-size:0.72rem">Days Logged</div>
+            <div class="stat-val" style="font-size:1.25rem">23</div>
+          </div>
+          <div class="stat-card card-sm" style="padding:0.75rem">
+            <div class="stat-label" style="font-size:0.72rem">Streak</div>
+            <div class="stat-val" style="font-size:1.25rem">12🔥</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 9 — SELF CARE TOOLS
+══════════════════════════════════════════════════════ -->
+<div id="self-care" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('browse-circles')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Browse Circles</a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>Mood Tracker</a>
+      <a class="nav-item active" onclick="showScreen('self-care')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Self Care</a>
+      <a class="nav-item" onclick="showScreen('crisis-support')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crisis Support</a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badges</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <div class="flex-between">
+        <div><h2>Self-Care Tools</h2><p>Build healthy habits, one day at a time</p></div>
+        <div><span class="badge badge-primary">245 pts today</span></div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div style="margin-bottom:1.25rem">
+        <div class="flex-between mb-1"><span style="font-size:0.875rem;font-weight:500">Daily Progress</span><span style="font-size:0.875rem;color:var(--text3)">3 / 5 completed</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+      </div>
+
+      <div class="grid-2" style="gap:1.5rem">
+        <div class="card">
+          <div class="flex-between mb-2">
+            <h3 style="font-size:0.95rem;font-weight:600">📋 Today's Tasks</h3>
+            <span class="badge badge-success">3/5</span>
+          </div>
+          <div id="self-care-tasks">
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Morning meditation (10 min)</span><span class="task-pts">+20 pts</span></div>
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Drink 8 glasses of water</span><span class="task-pts">+10 pts</span></div>
+            <div class="task-item done" onclick="toggleTask(this)"><div class="task-check">✓</div><span class="task-label">Write 3 gratitudes</span><span class="task-pts">+15 pts</span></div>
+            <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div><span class="task-label">30 min walk outside</span><span class="task-pts">+25 pts</span></div>
+            <div class="task-item" onclick="toggleTask(this)"><div class="task-check"></div><span class="task-label">Evening wind-down routine</span><span class="task-pts">+20 pts</span></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:1rem">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">🌬️ Box Breathing</h3>
+            <div id="breath-display" style="width:100px;height:100px;border-radius:50%;border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:0.875rem;font-weight:600;color:var(--primary);transition:all 1s;background:var(--primary-bg)">Ready</div>
+            <div style="text-align:center;font-size:0.8rem;color:var(--text3);margin-bottom:1rem" id="breath-label">4 seconds each phase</div>
+            <button class="btn btn-primary btn-full btn-sm" id="breath-btn" onclick="startBreathing()">Start Exercise</button>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">📝 Gratitude Journal</h3>
+            <textarea placeholder="Today I'm grateful for..." rows="4" style="width:100%;padding:0.65rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.875rem;resize:none;outline:none"></textarea>
+            <button class="btn btn-ghost btn-sm" style="margin-top:0.75rem;width:100%" onclick="showToast('Gratitude saved! +15 pts 🌟')">Save Entry</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 10 — CRISIS SUPPORT
+══════════════════════════════════════════════════════ -->
+<div id="crisis-support" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('browse-circles')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Browse Circles</a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>Mood Tracker</a>
+      <a class="nav-item" onclick="showScreen('self-care')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Self Care</a>
+      <a class="nav-item active" onclick="showScreen('crisis-support')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crisis Support</a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badges</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div style="background:var(--danger);color:#fff;padding:1rem 2rem;text-align:center">
+      <strong>You are not alone.</strong> If you are in immediate danger, call 911 or your local emergency services.
+    </div>
+    <div class="page-header" style="padding-top:1.5rem"><h2>Crisis Support</h2><p>Immediate resources and support tools — available 24/7</p></div>
+    <div class="page-body">
+      <div style="margin-bottom:1.5rem">
+        <p style="font-size:0.875rem;font-weight:600;color:var(--text2);margin-bottom:0.75rem">How urgent is your need right now?</p>
+        <div class="crisis-level crisis-low" onclick="showToast('Connecting to peer support...')">
+          <div style="font-weight:600;color:#0F6E56">💚 I need someone to talk to</div>
+          <div style="font-size:0.82rem;color:#0F6E56;margin-top:0.2rem;opacity:0.85">Peer support, community, gentle conversation</div>
+        </div>
+        <div class="crisis-level crisis-med" onclick="showToast('Connecting to counselor...')">
+          <div style="font-weight:600;color:#854F0B">🟡 I'm struggling and need real support</div>
+          <div style="font-size:0.82rem;color:#854F0B;margin-top:0.2rem;opacity:0.85">Text or call a trained counselor</div>
+        </div>
+        <div class="crisis-level crisis-high" onclick="showToast('Connecting to crisis line...')">
+          <div style="font-weight:600;color:#A32D2D">🔴 I am in crisis right now</div>
+          <div style="font-size:0.82rem;color:#A32D2D;margin-top:0.2rem;opacity:0.85">Immediate crisis intervention — please reach out now</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="gap:1.5rem">
+        <div class="card">
+          <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">☎️ Crisis Hotlines</h3>
+          <div style="margin-bottom:0.75rem;padding:0.75rem;background:var(--danger-bg);border-radius:var(--radius-sm);border:1px solid rgba(226,75,74,0.3)">
+            <div style="font-weight:600;font-size:0.875rem">National Suicide Prevention Lifeline</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--danger);margin-top:0.2rem">988</div>
+            <div style="font-size:0.78rem;color:var(--text3)">Available 24/7 · Call or text</div>
+          </div>
+          <div style="margin-bottom:0.75rem;padding:0.75rem;background:var(--warning-bg);border-radius:var(--radius-sm);border:1px solid rgba(186,117,23,0.3)">
+            <div style="font-weight:600;font-size:0.875rem">Crisis Text Line</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--warning);margin-top:0.2rem">Text HOME to 741741</div>
+            <div style="font-size:0.78rem;color:var(--text3)">24/7 text support</div>
+          </div>
+          <div style="padding:0.75rem;background:var(--primary-bg);border-radius:var(--radius-sm);border:1px solid rgba(91,76,232,0.2)">
+            <div style="font-weight:600;font-size:0.875rem">SAMHSA National Helpline</div>
+            <div style="font-size:1.2rem;font-weight:700;color:var(--primary);margin-top:0.2rem">1-800-662-4357</div>
+            <div style="font-size:0.78rem;color:var(--text3)">Free, confidential, 24/7</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">🛡️ Safety Planning</h3>
+          <p style="font-size:0.875rem;color:var(--text2);margin-bottom:1rem;line-height:1.6">A safety plan helps you identify warning signs and coping strategies before a crisis escalates.</p>
+          <div style="margin-bottom:0.75rem">
+            <label style="font-size:0.82rem;font-weight:600;color:var(--text2);display:block;margin-bottom:0.35rem">My warning signs are:</label>
+            <textarea rows="2" placeholder="e.g. Withdrawing from friends, not sleeping..." style="width:100%;padding:0.6rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.82rem;resize:none;outline:none"></textarea>
+          </div>
+          <div style="margin-bottom:0.75rem">
+            <label style="font-size:0.82rem;font-weight:600;color:var(--text2);display:block;margin-bottom:0.35rem">People I can call:</label>
+            <textarea rows="2" placeholder="Name, phone number..." style="width:100%;padding:0.6rem;border:1.5px solid var(--border2);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:0.82rem;resize:none;outline:none"></textarea>
+          </div>
+          <button class="btn btn-primary btn-full btn-sm" onclick="showToast('Safety plan saved securely 🔒')">Save My Safety Plan</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1.5rem;text-align:center;background:var(--primary);color:#fff">
+        <h3 style="font-weight:700;margin-bottom:0.5rem">Need to talk right now?</h3>
+        <p style="opacity:0.85;font-size:0.875rem;margin-bottom:1.25rem">Connect with a trained peer supporter in the MindBridge community</p>
+        <button class="btn" style="background:#fff;color:var(--primary);font-weight:600" onclick="showToast('Connecting you to a peer supporter...')">💬 Start a Support Chat</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 11 — PROFILE
+══════════════════════════════════════════════════════ -->
+<div id="profile" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('browse-circles')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Browse Circles</a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>Mood Tracker</a>
+      <a class="nav-item" onclick="showScreen('self-care')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Self Care</a>
+      <a class="nav-item" onclick="showScreen('crisis-support')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crisis Support</a>
+      <a class="nav-item" onclick="showScreen('badge-pathway')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badges</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="page-header"><h2>My Profile</h2><p>Manage your account and preferences</p></div>
+    <div class="page-body">
+      <div class="grid-2" style="gap:1.5rem">
+        <div>
+          <div class="card" style="margin-bottom:1.25rem">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+              <div class="profile-avatar" id="profile-avatar">A</div>
+              <div>
+                <h3 id="profile-name" style="font-size:1.1rem;font-weight:700">Alex Johnson</h3>
+                <p style="color:var(--text3);font-size:0.875rem" id="profile-email">alex@example.com</p>
+                <span class="badge badge-primary" style="margin-top:0.3rem">Member since 2024</span>
+              </div>
+            </div>
+            <div class="form-group"><label>Display Name</label><input type="text" value="Alex Johnson" oninput="updateProfileName(this.value)"></div>
+            <div class="form-group"><label>Email</label><input type="email" value="alex@example.com"></div>
+            <div class="form-group"><label>Bio</label><textarea rows="2" placeholder="Tell the community a bit about yourself...">Navigating life one day at a time 🌱</textarea></div>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Profile updated!')">Save Changes</button>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">Wellness Summary</h3>
+            <div class="grid-2" style="gap:0.75rem">
+              <div class="stat-card" style="padding:0.75rem"><div class="stat-label" style="font-size:0.72rem">Total Check-ins</div><div class="stat-val" style="font-size:1.4rem">47</div></div>
+              <div class="stat-card" style="padding:0.75rem"><div class="stat-label" style="font-size:0.72rem">Circles Joined</div><div class="stat-val" style="font-size:1.4rem">5</div></div>
+              <div class="stat-card" style="padding:0.75rem"><div class="stat-label" style="font-size:0.72rem">Badges</div><div class="stat-val" style="font-size:1.4rem">8</div></div>
+              <div class="stat-card" style="padding:0.75rem"><div class="stat-label" style="font-size:0.72rem">Best Streak</div><div class="stat-val" style="font-size:1.4rem">21🔥</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1.25rem">Preferences & Privacy</h3>
+          <div class="setting-row">
+            <div><div style="font-weight:500;font-size:0.9rem">Email Notifications</div><div style="font-size:0.78rem;color:var(--text3)">Daily mood reminders</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div style="font-weight:500;font-size:0.9rem">Anonymous Mode</div><div style="font-size:0.78rem;color:var(--text3)">Hide name in circles</div></div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div style="font-weight:500;font-size:0.9rem">Mood Data Sharing</div><div style="font-size:0.78rem;color:var(--text3)">Share anonymized data for research</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div style="font-weight:500;font-size:0.9rem">Crisis Alert</div><div style="font-size:0.78rem;color:var(--text3)">Notify trusted contact if mood drops</div></div>
+            <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="setting-row">
+            <div><div style="font-weight:500;font-size:0.9rem">Two-Factor Auth</div><div style="font-size:0.78rem;color:var(--text3)">Extra account security</div></div>
+            <div class="toggle" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+            <button class="btn btn-ghost btn-sm btn-full" style="color:var(--danger);border-color:rgba(226,75,74,0.3)" onclick="showToast('Signed out successfully')">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 12 — BADGE PATHWAY
+══════════════════════════════════════════════════════ -->
+<div id="badge-pathway" class="screen with-sidebar">
+  <aside class="sidebar">
+    <div class="logo">Mind<span>Bridge</span></div>
+    <nav class="sidebar-nav">
+      <a class="nav-item" onclick="showScreen('dashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" onclick="showScreen('browse-circles')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>Browse Circles</a>
+      <a class="nav-item" onclick="showScreen('mood-tracker')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>Mood Tracker</a>
+      <a class="nav-item" onclick="showScreen('self-care')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Self Care</a>
+      <a class="nav-item" onclick="showScreen('crisis-support')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Crisis Support</a>
+      <a class="nav-item active" onclick="showScreen('badge-pathway')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>Badges</a>
+    </nav>
+    <div class="sidebar-footer"><a class="nav-item" onclick="showScreen('profile')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>My Profile</a></div>
+  </aside>
+  <main class="main">
+    <div class="page-header">
+      <div class="flex-between">
+        <div><h2>Badge Pathway</h2><p>Earn badges for your wellness journey</p></div>
+        <div style="text-align:right"><div style="font-family:'Sora',sans-serif;font-size:1.5rem;font-weight:700;color:var(--primary)">1,245 pts</div><div style="font-size:0.78rem;color:var(--text3)">Total points earned</div></div>
+      </div>
+    </div>
+    <div class="page-body">
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="flex-between mb-1">
+          <h3 style="font-size:0.875rem;font-weight:600">Progress to Supporter Level</h3>
+          <span style="font-size:0.875rem;color:var(--text3)">1,245 / 2,000 pts</span>
+        </div>
+        <div class="progress-bar" style="height:12px"><div class="progress-fill" style="width:62%"></div></div>
+        <div style="font-size:0.78rem;color:var(--text3);margin-top:0.4rem">755 pts more to reach Supporter level 🌟</div>
+      </div>
+
+      <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">Earned Badges</h3>
+      <div class="grid-4" style="gap:1rem;margin-bottom:2rem">
+        <div class="badge-card"><div class="badge-icon">🌱</div><h4>First Step</h4><p>Completed first check-in</p></div>
+        <div class="badge-card"><div class="badge-icon">🔥</div><h4>7-Day Streak</h4><p>7 consecutive days logged</p></div>
+        <div class="badge-card"><div class="badge-icon">🫂</div><h4>Circle Joiner</h4><p>Joined first support circle</p></div>
+        <div class="badge-card"><div class="badge-icon">💬</div><h4>Conversation Starter</h4><p>Shared in a circle for the first time</p></div>
+        <div class="badge-card"><div class="badge-icon">🧘</div><h4>Mindful Week</h4><p>7 days of self-care tasks</p></div>
+        <div class="badge-card"><div class="badge-icon">📊</div><h4>Mood Tracker</h4><p>Logged mood 14 days in a row</p></div>
+        <div class="badge-card"><div class="badge-icon">💜</div><h4>Peer Supporter</h4><p>Helped 5 community members</p></div>
+        <div class="badge-card"><div class="badge-icon">⭐</div><h4>Rising Star</h4><p>Reached 1,000 wellness points</p></div>
+      </div>
+
+      <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:1rem">Upcoming Badges</h3>
+      <div class="grid-4" style="gap:1rem">
+        <div class="badge-card locked"><div class="badge-icon">🏆</div><h4>21-Day Champion</h4><p>Log 21 days in a row</p></div>
+        <div class="badge-card locked"><div class="badge-icon">🌟</div><h4>Supporter</h4><p>Reach 2,000 points</p></div>
+        <div class="badge-card locked"><div class="badge-icon">🦋</div><h4>Transformation</h4><p>Complete 30-day wellness plan</p></div>
+        <div class="badge-card locked"><div class="badge-icon">👑</div><h4>Community Leader</h4><p>Moderate a circle for 1 month</p></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentUser = { name: 'Alex', email: 'alex@example.com' };
+  let breathingInterval = null;
+  let breathingPhase = 0;
+  const breathPhases = ['Inhale...','Hold...','Exhale...','Hold...'];
+  const breathDurations = [4000, 4000, 4000, 4000];
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.add('active');
+      window.scrollTo(0,0);
+    }
+    if (breathingInterval) { clearInterval(breathingInterval); breathingInterval = null; }
+  }
+
+  function doLogin() {
+    const name = 'Alex';
+    currentUser.name = name;
+    document.getElementById('greeting-text').textContent = `Good ${getTimeOfDay()}, ${name} 👋`;
+    document.getElementById('sidebar-username').textContent = name;
+    const av = document.getElementById('profile-avatar');
+    if (av) av.textContent = name[0].toUpperCase();
+    showScreen('dashboard');
+    showToast('Welcome back, ' + name + '! 👋');
+  }
+
+  function doSignup() {
+    const nameEl = document.getElementById('su-name');
+    const emailEl = document.getElementById('su-email');
+    const name = nameEl && nameEl.value ? nameEl.value.split(' ')[0] : 'User';
+    const email = emailEl && emailEl.value ? emailEl.value : 'user@example.com';
+    currentUser = { name, email };
+    document.getElementById('greeting-text').textContent = `Good ${getTimeOfDay()}, ${name} 👋`;
+    document.getElementById('sidebar-username').textContent = name;
+    document.getElementById('profile-name').textContent = nameEl ? nameEl.value : name;
+    document.getElementById('profile-email').textContent = email;
+    const av = document.getElementById('profile-avatar');
+    if (av) av.textContent = name[0].toUpperCase();
+    showScreen('dashboard');
+    showToast('Account created! Welcome to MindBridge 🌱');
+  }
+
+  function getTimeOfDay() {
+    const h = new Date().getHours();
+    if (h < 12) return 'morning';
+    if (h < 17) return 'afternoon';
+    return 'evening';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function selectMood(btn, val) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function saveMood() {
+    showToast('Mood logged! +10 pts earned 🌟');
+  }
+
+  function toggleTask(el) {
+    el.classList.toggle('done');
+    const check = el.querySelector('.task-check');
+    if (el.classList.contains('done')) {
+      check.textContent = '✓';
+      showToast('Task completed! Points earned 🎉');
+    } else {
+      check.textContent = '';
+    }
+  }
+
+  function sendChatMsg() {
+    const inp = document.getElementById('chat-input');
+    const msg = inp.value.trim();
+    if (!msg) return;
+    const chatArea = document.querySelector('.chat-area > div:last-child');
+    const bubble = document.createElement('div');
+    bubble.style.cssText = 'align-self:flex-end;max-width:75%';
+    bubble.innerHTML = `<div style="font-size:0.75rem;color:var(--text3);margin-bottom:0.2rem;text-align:right">You · Just now</div><div class="chat-bubble outgoing">${msg}</div>`;
+    chatArea.appendChild(bubble);
+    inp.value = '';
+    bubble.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function startBreathing() {
+    if (breathingInterval) { clearInterval(breathingInterval); breathingInterval = null; const btn = document.getElementById('breath-btn'); btn.textContent = 'Start Exercise'; document.getElementById('breath-display').textContent = 'Ready'; document.getElementById('breath-label').textContent = '4 seconds each phase'; return; }
+    const display = document.getElementById('breath-display');
+    const label = document.getElementById('breath-label');
+    const btn = document.getElementById('breath-btn');
+    btn.textContent = 'Stop';
+    let phase = 0;
+    function runPhase() {
+      display.textContent = breathPhases[phase];
+      label.textContent = `Phase ${phase + 1}/4 — ${breathPhases[phase]}`;
+      if (phase === 0 || phase === 2) { display.style.transform = 'scale(1.25)'; display.style.background = 'var(--primary-bg)'; }
+      else { display.style.transform = 'scale(1)'; display.style.background = 'var(--surface2)'; }
+      phase = (phase + 1) % 4;
+    }
+    runPhase();
+    breathingInterval = setInterval(runPhase, 4000);
+  }
+
+  function filterCircles(q) {
+    const cards = document.querySelectorAll('#circles-grid .circle-card');
+    cards.forEach(c => { c.style.display = q === '' || c.querySelector('h4').textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none'; });
+  }
+
+  function updateProfileName(val) {
+    document.getElementById('profile-name').textContent = val || 'User';
+  }
+
+  // Set greeting on load
+  document.getElementById('greeting-text').textContent = `Good ${getTimeOfDay()}, Alex 👋`;
+</script>
+</body>
+</html>
